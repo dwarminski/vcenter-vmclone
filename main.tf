@@ -10,9 +10,7 @@ data "vsphere_datacenter" "dc" {
 }
 
 data "vsphere_folder" "target_folder" {
-  path          = var.vm_folder
-  datacenter_id = data.vsphere_datacenter.dc.id
-  type          = "vm"
+  path = var.vm_folder
 }
 
 data "vsphere_compute_cluster" "cluster" {
@@ -35,11 +33,17 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = data.vsphere_datacenter.dc.id
 }
 
+data "vsphere_host" "host" {
+  name          = var.host
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
+
 resource "vsphere_virtual_machine" "vm" {
   name             = var.vm_name
   folder           = data.vsphere_folder.target_folder.id
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
+  host_system_id   = data.vsphere_host.host.id
 
   num_cpus = var.num_cpus
   memory   = var.memory_mb
@@ -47,7 +51,6 @@ resource "vsphere_virtual_machine" "vm" {
 
   network_interface {
     network_id   = data.vsphere_network.network.id
-    # if adapter_type empty use from template
     adapter_type = var.adapter_type != "" ? var.adapter_type : data.vsphere_virtual_machine.template.network_interface_types[0]
   }
 
@@ -78,6 +81,6 @@ resource "vsphere_virtual_machine" "vm" {
   }
 
   lifecycle {
-    prevent_destroy = var.prevent_destroy
+    prevent_destroy = true #cannot be parametrized :<
   }
 }

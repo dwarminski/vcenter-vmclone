@@ -68,7 +68,7 @@ variable "memory_mb" {
 }
 
 variable "adapter_type" {
-  description = "Adapter type"
+  description = "NIC type"
   type        = string
   default     = ""
 }
@@ -79,16 +79,21 @@ variable "disk_size" {
   default     = 0
 }
 
+variable "host" {
+  description = "dst ESXi host"
+  type        = string
+}
+
 variable "vm_ip" {
   description = "IP addrr"
   type        = string
-  default     = "" 
+  default     = ""
 }
 
 variable "vm_netmask" {
-  description = "Prefix"
-  type        = string
-  default     = ""
+  description = "Prefix (24 -> 255.255.255.0 25 -> 255.255.255.128)"
+  type        = number
+  default     = 24
 }
 
 variable "vm_gateway" {
@@ -103,8 +108,10 @@ variable "dns_servers" {
   default     = []
 }
 
+/*
 variable "prevent_destroy" {
   description = "Protect vm"
   type        = bool
   default     = true
 }
+*/
